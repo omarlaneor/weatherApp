@@ -3,8 +3,8 @@ import React from "react";
 const Highlights = () => {
   return (
     <div className="mt-8 text-center">
-      <h2 className="text-xl text-white font-semibold mt-12 mb-6 text-left ml-36">
-        Today's Highlights
+      <h2 className="text-xl text-white font-semibold mt-12 mb-6 text-left ml-24">
+        Today's Highlights'
       </h2>
       <div className="flex justify-center items-center">
         <div className="bg-[#1E213A] text-center mr-10 p-4 h-[204px] w-[38%] text-white rounded-md">
@@ -40,6 +40,9 @@ const Highlights = () => {
           <h3 className="text-md font-semibold mb-2 mt-4">Air Pressure</h3>
           <p className="text-5xl font-bold mb-2">998 mb</p>
         </div>
+      </div>
+      <div>
+        <p className="text-white mt-10">Created by Omar Jr. Osorio</p>
       </div>
     </div>
   );
