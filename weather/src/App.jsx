@@ -1,9 +1,10 @@
-// App.jsx
 import React, { useState } from "react";
 import WeatherCard from "./components/WeatherCard/WeatherCard";
 import Highlights from "./components/Highlights/Highlights";
 import WeatherInfo from "./components/WeatherInfo/WeatherInfo";
 import "../src/App.css";
+import Temperature from "./components/Temperature/Temperature";
+import SearchModal from "./components/SearchModal/SearchModal";
 
 const getFormattedDate = () => {
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -64,13 +65,26 @@ const App = () => {
     },
   ]);
 
+  const [showModal, setShowModal] = useState(false);
+
+  const handleSearchClick = () => {
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
   return (
     <div className="flex justify-center items-center h-screen">
       <div
-        className="ml-28 p-4 w-[25%] h-[800px] bg-cover relative"
+        className="ml-28 p-4 w-[420px] h-[800px] bg-cover relative"
         style={{ backgroundImage: "url(back-left.svg)" }}
       >
-        <button className="bg-gray-300 p-2 border-none rounded-none">
+        <button
+          className="bg-[#6E707A] p-2 border-none rounded-none text-white"
+          onClick={handleSearchClick}
+        >
           Search for Places
         </button>
 
@@ -85,14 +99,18 @@ const App = () => {
         ))}
       </div>
 
-      <div className="bg-[#100E1D] p-4 w-3/4 h-[800px] justify-center flex flex-col">
+      <div className="bg-[#100E1D] mr-20 p-4 w-[75%] h-[800px] justify-center flex flex-col">
         <div className="flex flex-wrap justify-center">
+          <Temperature />
           {places.map((place, index) => (
             <WeatherCard key={index} place={place} />
           ))}
         </div>
         <Highlights />
       </div>
+
+      {/* Incluimos el componente SearchModal */}
+      <SearchModal showModal={showModal} onClose={handleCloseModal} />
     </div>
   );
 };

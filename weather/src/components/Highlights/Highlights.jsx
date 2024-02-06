@@ -3,7 +3,7 @@ import React from "react";
 const Highlights = () => {
   return (
     <div className="mt-8 text-center">
-      <h2 className="text-xl text-white font-semibold mt-12 mb-6 text-left ml-24">
+      <h2 className="text-xl text-white font-semibold mt-2 mb-6 text-left ml-16">
         Today's Highlights'
       </h2>
       <div className="flex justify-center items-center">
@@ -33,7 +33,7 @@ const Highlights = () => {
       <div className="flex justify-center items-center mt-8">
         <div className="bg-[#1E213A] text-center mr-10 p-4 h-[159px] w-[38%] text-white rounded-md">
           <h3 className="text-md font-semibold mb-2 mt-4">Visibility</h3>
-          <p className="text-5xl font-bold mb-2">6.4 miles</p>
+          <p className="text-5xl font-bold mb-2">6,4 miles</p>
         </div>
 
         <div className="bg-[#1E213A] text-center p-4 h-[159px] w-[38%] text-white rounded-md">
@@ -42,7 +42,9 @@ const Highlights = () => {
         </div>
       </div>
       <div>
-        <p className="text-white mt-10">Created by Omar Jr. Osorio</p>
+        <p className="text-white mt-10">
+          Created by Omar Jr. Osorio - devChallenges.io
+        </p>
       </div>
     </div>
   );

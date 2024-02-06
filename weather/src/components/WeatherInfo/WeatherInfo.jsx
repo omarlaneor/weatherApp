@@ -5,7 +5,7 @@ const WeatherInfo = ({ image, temperature, description, date }) => {
     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white">
       <img
         src={image}
-        alt="Descripción de la imagen"
+        alt="Pronóstico"
         className="w-26 h-26 mx-auto mb-6 mt-32"
       />
 
