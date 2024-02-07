@@ -42,7 +42,7 @@ const Highlights = () => {
         </div>
       </div>
       <div>
-        <p className="text-white mt-10">
+        <p className="text-white mt-10 mb-4">
           Created by Omar Jr. Osorio - devChallenges.io
         </p>
       </div>
