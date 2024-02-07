@@ -1,74 +1,52 @@
 import React, { useState, useEffect } from "react";
+import { ExitIcon, RightIcon, SearchIcon } from "./Icons";
+import { getPlacesFromLocalStorage } from "../utils/storage";
 
-const SearchModal = ({ showModal, onClose, onSelectCity }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [cities, setCities] = useState([]);
-  const [selectedCity, setSelectedCity] = useState(null);
+const SearchModal = ({ showModal, onClose, inputSearch }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [place, setPlaces] = useState(null);
+  const [searchPlace, setSearchPlace] = useState("");
 
-  useEffect(() => {
-    const fetchCities = async () => {
-      const apiKey = "bdb1b19748308daf15192f6310a6eead";
-      const apiUrl = `https://api.openweathermap.org/data/2.5/find?q=${searchTerm}&appid=${apiKey}&units=metric`;
-
-      try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-        const cityList = data.list.map((city) => city.name);
-        setCities(cityList);
-      } catch (error) {
-        console.error("Error fetching city data", error);
-      }
-    };
-
-    if (searchTerm.length > 2) {
-      fetchCities();
+  const toggleMenu = () => {
+    if (isMenuOpen) {
+      document.body.classList.remove("no-scrollbar");
     } else {
-      setCities([]);
+      document.body.classList.add("no-scrollbar");
     }
-  }, [searchTerm]);
-
-  const handleCitySelect = (city) => {
-    setSelectedCity(city);
-    onSelectCity(city); // Esto es opcional, depende de cómo quieras manejar la selección en App
-    onClose();
+    setIsMenuOpen((prev) => !prev);
   };
 
+  const selectAndClose = (place) => {
+    inputSearch(place);
+    toggleMenu();
+  };
+
+  const search = (e) => {
+    e.preventDefault();
+    inputSearch(searchPlace);
+  };
+
+  useEffect(() => {
+    setPlaces(getPlacesFromLocalStorage());
+  }, []);
+
   return (
-    <>
-      {showModal && (
-        <div className="fixed left-28 top-0 bottom-0 bg-[#6b76d400] bg-opacity-80 flex items-center justify-center">
-          <div className="bg-[#1E213A] p-8 w-[334px] h-[800px]">
-            <div className="flex justify-end">
-              <button
-                className="text-white text-2xl cursor-pointer"
-                onClick={onClose}
-              >
-                &times;
-              </button>
-            </div>
-            <input
-              type="text"
-              placeholder="Search Location"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-[70%] mr-2 p-2 mt-4 bg-[#1E213A] text-white border border-[#616475]"
-            />
-            <div className="mt-4">
-              <select
-                className="bg-[#1E213A] border border-[#616475] text-white p-3 w-full mt-10"
-                onChange={(e) => handleCitySelect(e.target.value)}
-              >
-                {cities.map((city, index) => (
-                  <option key={index} value={city}>
-                    {city}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
+    <header className="bg-blue-1">
+      <div className="py-6 px-4">
+        <button className="bg-gray-3 py-3 px-5" onClick={toggleMenu}>
+          Search For Places
+        </button>
+      </div>
+      <nav
+        className={`${
+          isMenuOpen ? "fixed" : "hidden"
+        } p-3 bg-blue-1 top-0 left-0 right-0 bottom-0 justify-center text-center z-50 no-scrollbar items-center overflow-auto`}
+      >
+        <button className="p-4 flex ml-auto" onClick={toggleMenu}>
+          <ExitIcon />
+        </button>
+      </nav>
+    </header>
   );
 };
 
