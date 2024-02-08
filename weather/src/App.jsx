@@ -1,183 +1,230 @@
-import React, { useState, useEffect } from "react";
-import WeatherCard from "./components/WeatherCard/WeatherCard";
-import Highlights from "./components/Highlights/Highlights";
-import WeatherInfo from "./components/WeatherInfo/WeatherInfo";
-import Temperature from "./components/Temperature/Temperature";
+import { useEffect, useState } from "react";
+import { ArrowIcon, LocationIcon, SignalIcon } from "./components/Icons/Icons";
+
+import {
+  getForecast,
+  getForecastCoord,
+  getWeather,
+  getWeatherCoord,
+} from "./apiKey/api";
+import { addPlaceToLocalStorage } from "./storage/storage";
 import SearchModal from "./components/SearchModal/SearchModal";
-import "../src/App.css";
 
-const App = () => {
-  const [places, setPlaces] = useState([
-    {
-      name: { currentDate },
-      image: "url_to_image_1.jpg",
-      temperature: 25,
-      description: "Shower",
-    },
-    {
-      name: "Imagen 2",
-      image: "url_to_image_2.jpg",
-      temperature: 20,
-      description: "Cloudy",
-    },
-    {
-      name: "City 3",
-      image: "url_to_image_3.jpg",
-      temperature: 22,
-      description: "Sunny",
-    },
-    {
-      name: "City 4",
-      image: "url_to_image_4.jpg",
-      temperature: 18,
-      description: "Rainy",
-    },
-    {
-      name: "City 5",
-      image: "url_to_image_5.jpg",
-      temperature: 23,
-      description: "Clear",
-    },
-  ]);
+function App() {
+  const [weatherData, setWeatherData] = useState({
+    temp: 0,
+    dateFormat: "",
+    windStatus: 0,
+    humidity: 0,
+    airPressure: 0,
+    visibilityInMiles: 0,
+    weather: "",
+    locationName: "",
+  });
+  const [forecastData, setForecastData] = useState({});
+  const [keys, setKeys] = useState([]);
 
-  const [showModal, setShowModal] = useState(false);
+  const changeWeather = (data) => {
+    const { weather, main, visibility, wind, name } = data;
+    const date = new Date();
+    const dateOptions = { weekday: "short", day: "numeric", month: "short" };
 
-  const handleSearchClick = () => {
-    setShowModal(true);
+    setWeatherData({
+      temp: Math.round(main?.temp ?? 0),
+      dateFormat: date.toLocaleDateString("en-US", dateOptions),
+      windStatus: Math.round(wind?.speed ?? 0),
+      humidity: Math.round(main?.humidity ?? 0),
+      airPressure: main?.pressure ?? 0,
+      visibilityInMiles: visibility ? visibility / 1609.34 : 0,
+      weather: weather[0]?.main ?? "Shower",
+      locationName: name,
+    });
+    const progreso = document.getElementById("progress");
+    const windStatus = document.getElementById("windStatus");
+    progreso.style.width = Math.round(main?.humidity ?? 0) + "%";
+    windStatus.style.transform = `rotate(${wind.deg}deg)`;
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
+  const changeForecast = (data) => {
+    const dailyForecast = [];
+
+    data.list.forEach((segment) => {
+      const fechaTexto = segment.dt_txt;
+      const fecha = new Date(fechaTexto);
+      const dia = fecha.toLocaleDateString("en-US", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+      });
+
+      if (!dailyForecast[dia]) {
+        dailyForecast[dia] = {
+          minTemp: segment.main.temp,
+          maxTemp: segment.main.temp,
+          weather: segment.weather[0].main,
+        };
+      } else {
+        dailyForecast[dia].minTemp = Math.min(
+          dailyForecast[dia].minTemp,
+          segment.main.temp
+        );
+        dailyForecast[dia].maxTemp = Math.max(
+          dailyForecast[dia].maxTemp,
+          segment.main.temp
+        );
+      }
+    });
+    const dayKeys = Object.keys(dailyForecast);
+    setForecastData(dailyForecast);
+    setKeys(dayKeys);
+  };
+
+  const coords = () => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        getWeatherCoord(lat, lon).then((data) => changeWeather(data));
+        getForecastCoord(lat, lon).then((data) => changeForecast(data));
+      });
+    } else {
+      console.log("La geolocalización no está disponible en este navegador.");
+    }
+  };
+
+  const inputSearch = (place) => {
+    addPlaceToLocalStorage(place);
+    getWeather(place).then((data) => changeWeather(data));
+    getForecast(place).then((data) => changeForecast(data));
   };
 
   useEffect(() => {
-    const fetchWeatherData = async () => {
-      const apiKey = "bdb1b19748308daf15192f6310a6eead";
-      const cities = ["Image 1", "City 2", "City 3", "City 4", "City 5"];
-      const weatherData = [];
-
-      for (const city of cities) {
-        const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`;
-
-        try {
-          const response = await fetch(apiUrl);
-          const data = await response.json();
-          const tomorrowData = data.list[8];
-          const weatherInfo = {
-            name: city,
-            temperature: tomorrowData.main.temp,
-            description: tomorrowData.weather[0].main,
-            image: getWeatherImage(tomorrowData.weather[0].main),
-          };
-          weatherData.push(weatherInfo);
-        } catch (error) {
-          console.error(`Error fetching weather data for ${city}`, error);
-        }
-      }
-
-      setPlaces(weatherData);
-    };
-
-    const getWeatherImage = (description) => {
-      switch (description) {
-        case "Clear":
-          return "Clear.png";
-        case "Hail":
-          return "Hail.png";
-        case "HeavyCloud":
-          return "HeavyCloud.png";
-        case "HeavyRain":
-          return "HeavyRain.png";
-        case "LightCloud":
-          return "LightCloud.png";
-        case "LightRain":
-          return "LightRain.png";
-        case "Shower":
-          return "Shower.png";
-        case "Sleet":
-          return "Sleet.png";
-        case "Snow":
-          return "Snow.png";
-        default:
-          return "Unknown.png";
-      }
-    };
-
-    fetchWeatherData();
+    getWeather("alemania").then((data) => changeWeather(data));
+    getForecast("alemania").then((data) => changeForecast(data));
   }, []);
 
-  const getFormattedDate = () => {
-    const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Augt",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-
-    const currentDate = new Date();
-    const dayOfWeek = daysOfWeek[currentDate.getDay()];
-    const dayOfMonth = currentDate.getDate();
-    const month = months[currentDate.getMonth()];
-
-    return `Today, ${dayOfWeek}, ${dayOfMonth} ${month}`;
-  };
-
   return (
-    <div className="flex justify-center items-center h-screen">
-      <div className="ml-28 p-4 w-[400px] h-[800px] relative bg-[#1E213A]">
-        <div
-          className="bg-cover"
-          style={{
-            background: `url(Cloud-background.png)`,
-            backgroundPosition: "center",
-            marginLeft: "-14px",
-            width: "320px",
-            height: "210px",
-            position: "absolute",
-            marginTop: "70px",
-          }}
-        ></div>
-        <button
-          className="bg-[#6E707A] p-2 border-none rounded-none text-white"
-          onClick={handleSearchClick}
-        >
-          Search for Places
-        </button>
-
-        {places.map((place, index) => (
-          <WeatherInfo
-            key={index}
-            image={place.image}
-            temperature={place.temperature}
-            description={place.description}
-            date={getFormattedDate()}
-          />
-        ))}
-      </div>
-
-      <div className="bg-[#100E1D] mr-20 p-4 w-[75%] h-[800px] justify-center flex flex-col">
-        <div className="flex flex-wrap justify-center">
-          <Temperature />
-          {places.map((place, index) => (
-            <WeatherCard key={index} place={place} />
-          ))}
-        </div>
-        <Highlights />
-      </div>
-
-      {/* Incluimos el componente SearchModal */}
-      <SearchModal showModal={showModal} onClose={handleCloseModal} />
-    </div>
+    <main className="md:flex max-w-8xl mx-auto">
+      <section className="md:fixed md:top-0 md:bottom-0 md:left-0 md:w-[400px] relative">
+        <SearchModal inputSearch={inputSearch} />
+        <article className="px-4 py-20 bg-blue-1 h-screen ">
+          <button
+            className="absolute top-6 right-4 bg-gray-3 rounded-full p-3 "
+            onClick={coords}
+          >
+            <SignalIcon />
+          </button>
+          <div className="flex flex-col items-center">
+            <img
+              className="w-36"
+              src={`/${weatherData.weather}.png`}
+              alt={`/${weatherData.weather}`}
+            />
+            <p className="text-[144px] font-medium">
+              {weatherData.temp}
+              <span className="text-gray-2 text-5xl">°C</span>
+            </p>
+            <p className="text-gray-2 text-4xl font-semibold pb-12">
+              {weatherData.weather}
+            </p>
+            <div className="flex gap-4 text-gray-2 text-lg font-medium pb-6">
+              <span>Today</span>
+              <span>•</span>
+              <span>{weatherData.dateFormat}</span>
+            </div>
+            <div className="flex gap-3">
+              <LocationIcon />
+              <p className="text-gray-2 text-lg font-semibold">
+                {weatherData.locationName}
+              </p>
+            </div>
+          </div>
+        </article>
+      </section>
+      <section className="md:flex-1 md:pl-[400px] md:m-20">
+        <section className="p-12 md:p-0 md:pb-12 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-7">
+          {keys.slice(0, 5).map((day) => {
+            const minTemp = Math.floor(forecastData[day].minTemp);
+            const maxTemp = Math.floor(forecastData[day].maxTemp);
+            const weather = forecastData[day].weather;
+            return (
+              <article
+                className="flex flex-col items-center bg-blue-1 py-4 px-5 m-auto "
+                key={day}
+              >
+                <p className="text-base font-medium pb-3">{day}</p>
+                <img
+                  className="w-14 pb-8"
+                  src={`/${weather}.png`}
+                  alt={`/${weather}.png`}
+                />
+                <div className="flex gap-8">
+                  <span>{maxTemp}°C</span>
+                  <span className="text-gray-2">{minTemp}°C</span>
+                </div>
+              </article>
+            );
+          })}
+        </section>
+        <section className="p-5">
+          <h3 className="text-2xl font-bold pb-8">Today’s Hightlights </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <article className="flex flex-col items-center bg-blue-1 w-full p-6">
+              <p className="text-base font-medium pb-2">Wind status</p>
+              <p className="text-6xl font-bold">
+                {weatherData.windStatus}
+                <span className="text-5xl font-medium">mph</span>
+              </p>
+              <div className="flex items-center pt-5 gap-4">
+                <span id="windStatus" className="bg-gray-4 p-3 rounded-full">
+                  <ArrowIcon />
+                </span>
+                <span>WSW</span>
+              </div>
+            </article>
+            <article className="flex flex-col items-center bg-blue-1 w-full py-6 px-12">
+              <p className="text-base font-medium pb-2">Humidity</p>
+              <p className="text-6xl font-bold">
+                {weatherData.humidity}
+                <span className="text-5xl font-medium">%</span>
+              </p>
+              <div className="flex justify-between w-full pt-4">
+                <span>0</span>
+                <span>50</span>
+                <span>100</span>
+              </div>
+              <div className="w-full h-2 bg-gray-1 rounded-full overflow-hidden">
+                <div
+                  id="progress"
+                  className="h-full bg-yellow-1 transition-all duration-300"
+                />
+              </div>
+              <span className="flex justify-end w-full">%</span>
+            </article>
+            <article className="flex flex-col items-center bg-blue-1 w-full p-6">
+              <p className="text-base font-medium pb-2">Visibility</p>
+              <p className="text-6xl font-bold">
+                {weatherData.visibilityInMiles.toFixed(1)}{" "}
+                <span className="text-5xl font-medium">miles</span>
+              </p>
+            </article>
+            <article className="flex flex-col items-center bg-blue-1 w-full p-6">
+              <p className="text-base font-medium pb-2">Air Pressure</p>
+              <p className="text-6xl font-bold">
+                {weatherData.airPressure}{" "}
+                <span className="text-5xl font-medium">mb</span>
+              </p>
+            </article>
+          </div>
+        </section>
+        <footer className="text-sm font-medium text-center p-8">
+          created by Omar Milansu Osorio -{" "}
+          <a href="https://devchallenges.io/">devChallenges.io</a>
+        </footer>
+      </section>
+    </main>
   );
-};
+}
 
 export default App;

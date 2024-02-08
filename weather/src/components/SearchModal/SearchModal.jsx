@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { ExitIcon, RightIcon, SearchIcon } from "./Icons";
-import { getPlacesFromLocalStorage } from "../utils/storage";
+import { ExitIcon, SearchIcon } from "../Icons/Icons";
+import { getPlacesFromLocalStorage } from "../../storage/storage";
 
 const SearchModal = ({ showModal, onClose, inputSearch }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [place, setPlaces] = useState(null);
+  const [places, setPlaces] = useState(null);
   const [searchPlace, setSearchPlace] = useState("");
 
   const toggleMenu = () => {
@@ -45,6 +45,21 @@ const SearchModal = ({ showModal, onClose, inputSearch }) => {
         <button className="p-4 flex ml-auto" onClick={toggleMenu}>
           <ExitIcon />
         </button>
+        <form className="flex gap-3" onSubmit={search}>
+          <div className="pl-3 gap-3 flex items-center p-1 border w-full border-gray-1">
+            <SearchIcon />
+            <input
+              className="bg-transparent w-full py-2 focus:outline-none"
+              placeholder="Type the place..."
+              type="text"
+              value={searchPlace}
+              onChange={(event) => setSearchPlace(event.target.value)}
+            />
+          </div>
+          <button className="bg-[#3C47E9] px-5 py-6" type="submit">
+            Search
+          </button>
+        </form>
       </nav>
     </header>
   );
