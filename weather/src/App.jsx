@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ArrowIcon } from "./components/Icons/Icons";
-
+import "./App.css";
 import {
   getForecast,
   getForecastCoord,
@@ -14,6 +14,7 @@ import ForecastDisplay from "./components/ForecastDisplay/ForecastDisplay";
 function App() {
   const [weatherData, setWeatherData] = useState({
     temp: 0,
+    tempUnit: "C",
     dateFormat: "",
     windStatus: 0,
     humidity: 0,
@@ -48,6 +49,7 @@ function App() {
       progreso.style.width = Math.round(main?.humidity ?? 0) + "%";
       windStatus.style.transform = `rotate(${wind.deg}deg)`;
     },
+
     changeForecast: (data) => {
       const dailyForecast = [];
       data.list.forEach((segment) => {
@@ -81,10 +83,23 @@ function App() {
       setForecastData(dailyForecast);
       setKeys(dayKeys);
     },
+
+    toggleTempUnit: () => {
+      setWeatherData({
+        ...weatherData,
+        temp:
+          weatherData.tempUnit === "C"
+            ? toFahrenheit(weatherData.temp)
+            : toCelsius(weatherData.temp),
+        tempUnit: weatherData.tempUnit === "C" ? "F" : "C",
+      });
+    },
   });
 
   const [forecastData, setForecastData] = useState({});
   const [keys, setKeys] = useState([]);
+  const toFahrenheit = (celsius) => (celsius * 9) / 5 + 32;
+  const toCelsius = (fahrenheit) => ((fahrenheit - 32) * 5) / 9;
 
   const coords = () => {
     if ("geolocation" in navigator) {
@@ -115,7 +130,28 @@ function App() {
   }, []);
 
   return (
-    <main className="md:flex max-w-8xl mx-auto">
+    <main className="md:flex max-w-8xl mx-auto relative">
+      <section className="md:absolute md:top-0 md:right-14 p-6">
+        <div className="flex items-center space-x-2">
+          <div
+            className={`h-8 w-8 bg-blue-1 rounded-full flex items-center justify-center text-white cursor-pointer ${
+              weatherData.tempUnit === "C" ? "active" : ""
+            }`}
+            onClick={weatherData.toggleTempUnit}
+          >
+            C°
+          </div>
+          <div
+            className={`h-8 w-8 bg-blue-1 rounded-full flex items-center justify-center text-white cursor-pointer ${
+              weatherData.tempUnit === "F" ? "active" : ""
+            }`}
+            onClick={weatherData.toggleTempUnit}
+          >
+            F°
+          </div>
+        </div>
+      </section>
+
       <section className="md:fixed md:top-0 md:bottom-0 md:left-0 md:w-[400px] relative">
         <SearchModal inputSearch={inputSearch} />
         <WeatherDisplay

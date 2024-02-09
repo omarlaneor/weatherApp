@@ -30,7 +30,7 @@ function WeatherDisplay({ weatherData, cords }) {
           {weatherData.temp}
           <span className="text-gray-2 text-5xl">°C</span>
         </p>
-        <p className="text-gray-2 text-4xl font-semibold pb-12">
+        <p className="text-gray-2 text-4xl font-semibold pb-32">
           {weatherData.weather}
         </p>
         <div className="flex gap-4 text-gray-2 text-lg font-medium pb-8">
