@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ExitIcon, SearchIcon } from "../Icons/Icons";
 
-const SearchModal = ({ showModal, onClose, inputSearch }) => {
+const SearchModal = ({ inputSearch }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchPlace, setSearchPlace] = useState("");
 
@@ -23,7 +23,7 @@ const SearchModal = ({ showModal, onClose, inputSearch }) => {
   return (
     <header className="bg-blue-1">
       <div className="py-6 px-4">
-        <button className="bg-gray-3 py-3 px-5" onClick={toggleMenu}>
+        <button className="bg-gray-3 py-3 px-10" onClick={toggleMenu}>
           Search For Places
         </button>
       </div>
