@@ -178,7 +178,7 @@ function App() {
             </article>
           </div>
         </section>
-        <footer className="text-sm font-medium text-center p-8">
+        <footer className="text-sm font-medium text-center p-6 bottom-0">
           created by Omar Milansu Osorio -{" "}
           <a href="https://devchallenges.io/">devChallenges.io</a>
         </footer>

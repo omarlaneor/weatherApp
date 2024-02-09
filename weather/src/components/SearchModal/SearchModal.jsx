@@ -23,7 +23,7 @@ const SearchModal = ({ inputSearch }) => {
   return (
     <header className="bg-blue-1">
       <div className="py-6 px-4">
-        <button className="bg-gray-3 py-3 px-10" onClick={toggleMenu}>
+        <button className="bg-gray-3 py-3 px-20" onClick={toggleMenu}>
           Search For Places
         </button>
       </div>
