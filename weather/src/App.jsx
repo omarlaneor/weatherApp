@@ -12,7 +12,7 @@ import WeatherDisplay from "./components/WeatherDisplay/WeatherDisplay";
 import ForecastDisplay from "./components/ForecastDisplay/ForecastDisplay";
 
 function App() {
-  const [weatherData, setWeatherData] = useState({
+  const [weatherInfo, setWeatherInfo] = useState({
     temp: 0,
     tempUnit: "C",
     dateFormat: "",
@@ -29,7 +29,7 @@ function App() {
       const date = new Date();
       const dateOptions = { weekday: "short", day: "numeric", month: "short" };
 
-      setWeatherData({
+      setWeatherInfo({
         temp: Math.round(main?.temp ?? 0),
         dateFormat: date.toLocaleDateString("en-US", dateOptions),
         windStatus: Math.round(wind?.speed ?? 0),
@@ -38,10 +38,10 @@ function App() {
         visibilityInMiles: visibility ? visibility / 1609.34 : 0,
         weather: weather[0]?.main ?? "Shower",
         locationName: name,
-        lat: weatherData.lat,
-        lon: weatherData.lon,
-        changeWeather: weatherData.changeWeather,
-        changeForecast: weatherData.changeForecast,
+        lat: weatherInfo.lat,
+        lon: weatherInfo.lon,
+        changeWeather: weatherInfo.changeWeather,
+        changeForecast: weatherInfo.changeForecast,
       });
 
       const progreso = document.getElementById("progress");
@@ -55,25 +55,25 @@ function App() {
       data.list.forEach((segment) => {
         const fechaTexto = segment.dt_txt;
         const fecha = new Date(fechaTexto);
-        const dia = fecha.toLocaleDateString("en-US", {
+        const day = fecha.toLocaleDateString("en-US", {
           weekday: "short",
           day: "numeric",
           month: "short",
         });
 
-        if (!dailyForecast[dia]) {
-          dailyForecast[dia] = {
+        if (!dailyForecast[day]) {
+          dailyForecast[day] = {
             minTemp: segment.main.temp,
             maxTemp: segment.main.temp,
             weather: segment.weather[0].main,
           };
         } else {
-          dailyForecast[dia].minTemp = Math.min(
-            dailyForecast[dia].minTemp,
+          dailyForecast[day].minTemp = Math.min(
+            dailyForecast[day].minTemp,
             segment.main.temp
           );
-          dailyForecast[dia].maxTemp = Math.max(
-            dailyForecast[dia].maxTemp,
+          dailyForecast[day].maxTemp = Math.max(
+            dailyForecast[day].maxTemp,
             segment.main.temp
           );
         }
@@ -85,13 +85,13 @@ function App() {
     },
 
     toggleTempUnit: () => {
-      setWeatherData({
-        ...weatherData,
+      setweatherInfo({
+        ...weatherInfo,
         temp:
-          weatherData.tempUnit === "C"
-            ? toFahrenheit(weatherData.temp)
-            : toCelsius(weatherData.temp),
-        tempUnit: weatherData.tempUnit === "C" ? "F" : "C",
+          weatherInfo.tempUnit === "C"
+            ? toFahrenheit(weatherInfo.temp)
+            : toCelsius(weatherInfo.temp),
+        tempUnit: weatherInfo.tempUnit === "C" ? "F" : "C",
       });
     },
   });
@@ -108,10 +108,10 @@ function App() {
         const lon = position.coords.longitude;
 
         getWeatherCoord(lat, lon).then((data) =>
-          weatherData.changeWeather(data)
+          weatherInfo.changeWeather(data)
         );
         getForecastCoord(lat, lon).then((data) =>
-          weatherData.changeForecast(data)
+          weatherInfo.changeForecast(data)
         );
       });
     } else {
@@ -120,13 +120,13 @@ function App() {
   };
 
   const inputSearch = (place) => {
-    getWeather(place).then((data) => weatherData.changeWeather(data));
-    getForecast(place).then((data) => weatherData.changeForecast(data));
+    getWeather(place).then((data) => weatherInfo.changeWeather(data));
+    getForecast(place).then((data) => weatherInfo.changeForecast(data));
   };
 
   useEffect(() => {
-    getWeather("Germany").then((data) => weatherData.changeWeather(data));
-    getForecast("Germany").then((data) => weatherData.changeForecast(data));
+    getWeather("Germany").then((data) => weatherInfo.changeWeather(data));
+    getForecast("Germany").then((data) => weatherInfo.changeForecast(data));
   }, []);
 
   return (
@@ -135,17 +135,17 @@ function App() {
         <div className="flex items-center space-x-2">
           <div
             className={`h-8 w-8 bg-blue-1 rounded-full flex items-center justify-center text-white cursor-pointer ${
-              weatherData.tempUnit === "C" ? "active" : ""
+              weatherInfo.tempUnit === "C" ? "active" : ""
             }`}
-            onClick={weatherData.toggleTempUnit}
+            onClick={weatherInfo.toggleTempUnit}
           >
             C°
           </div>
           <div
             className={`h-8 w-8 bg-blue-1 rounded-full flex items-center justify-center text-white cursor-pointer ${
-              weatherData.tempUnit === "F" ? "active" : ""
+              weatherInfo.tempUnit === "F" ? "active" : ""
             }`}
-            onClick={weatherData.toggleTempUnit}
+            onClick={weatherInfo.toggleTempUnit}
           >
             F°
           </div>
@@ -155,7 +155,7 @@ function App() {
       <section className="md:fixed md:top-0 md:bottom-0 md:left-0 md:w-[400px] relative">
         <SearchModal inputSearch={inputSearch} />
         <WeatherDisplay
-          weatherData={weatherData}
+          weatherInfo={weatherInfo}
           forecastData={forecastData}
           keys={keys}
           coords={coords}
@@ -169,7 +169,7 @@ function App() {
             <article className="flex flex-col items-center bg-blue-1 w-full p-6">
               <p className="text-base font-medium pb-2">Wind status</p>
               <p className="text-6xl font-bold">
-                {weatherData.windStatus}
+                {weatherInfo.windStatus}
                 <span className="text-5xl font-medium">mph</span>
               </p>
               <div className="flex items-center pt-5 gap-4">
@@ -182,7 +182,7 @@ function App() {
             <article className="flex flex-col items-center bg-blue-1 w-full py-6 px-12">
               <p className="text-base font-medium pb-2">Humidity</p>
               <p className="text-6xl font-bold">
-                {weatherData.humidity}
+                {weatherInfo.humidity}
                 <span className="text-5xl font-medium">%</span>
               </p>
               <div className="flex justify-between w-full pt-4">
@@ -201,14 +201,14 @@ function App() {
             <article className="flex flex-col items-center bg-blue-1 w-full p-6">
               <p className="text-base font-medium pb-2">Visibility</p>
               <p className="text-6xl font-bold">
-                {weatherData.visibilityInMiles.toFixed(1)}{" "}
+                {weatherInfo.visibilityInMiles.toFixed(1)}{" "}
                 <span className="text-5xl font-medium">miles</span>
               </p>
             </article>
             <article className="flex flex-col items-center bg-blue-1 w-full p-6">
               <p className="text-base font-medium pb-2">Air Pressure</p>
               <p className="text-6xl font-bold">
-                {weatherData.airPressure}{" "}
+                {weatherInfo.airPressure}{" "}
                 <span className="text-5xl font-medium">mb</span>
               </p>
             </article>

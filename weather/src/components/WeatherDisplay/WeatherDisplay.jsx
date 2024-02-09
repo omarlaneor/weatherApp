@@ -2,15 +2,15 @@ import React, { useEffect } from "react";
 import { LocationIcon } from "../Icons/Icons";
 import { getWeatherCoord, getForecastCoord } from "../../apiKey/api";
 
-function WeatherDisplay({ weatherData, cords }) {
+function WeatherDisplay({ weatherInfo, cords }) {
   useEffect(() => {
-    getWeatherCoord(weatherData.lat, weatherData.lon).then((data) =>
-      weatherData.changeWeather(data)
+    getWeatherCoord(weatherInfo.lat, weatherInfo.lon).then((data) =>
+      weatherInfo.changeWeather(data)
     );
-    getForecastCoord(weatherData.lat, weatherData.lon).then((data) =>
-      weatherData.changeForecast(data)
+    getForecastCoord(weatherInfo.lat, weatherInfo.lon).then((data) =>
+      weatherInfo.changeForecast(data)
     );
-  }, [weatherData]);
+  }, [weatherInfo]);
 
   return (
     <article className="px-4 py-20 bg-blue-1 h-screen">
@@ -23,25 +23,25 @@ function WeatherDisplay({ weatherData, cords }) {
       <div className="flex flex-col items-center">
         <img
           className="w-36"
-          src={`/${weatherData.weather}.png`}
-          alt={`/${weatherData.weather}`}
+          src={`/${weatherInfo.weather}.png`}
+          alt={`/${weatherInfo.weather}`}
         />
         <p className="text-[144px] font-medium">
-          {weatherData.temp}
+          {weatherInfo.temp}
           <span className="text-gray-2 text-5xl">°C</span>
         </p>
         <p className="text-gray-2 text-4xl font-semibold pb-32">
-          {weatherData.weather}
+          {weatherInfo.weather}
         </p>
         <div className="flex gap-4 text-gray-2 text-lg font-medium pb-8">
           <span>Today</span>
           <span>--</span>
-          <span>{weatherData.dateFormat}</span>
+          <span>{weatherInfo.dateFormat}</span>
         </div>
         <div className="flex gap-3">
           <LocationIcon />
           <p className="text-gray-2 text-lg font-semibold">
-            {weatherData.locationName}
+            {weatherInfo.locationName}
           </p>
         </div>
       </div>
