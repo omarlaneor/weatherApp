@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { ExitIcon, SearchIcon } from "../Icons/Icons";
-import { getPlacesFromLocalStorage } from "../../storage/storage";
 
 const SearchModal = ({ showModal, onClose, inputSearch }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -25,10 +24,6 @@ const SearchModal = ({ showModal, onClose, inputSearch }) => {
     e.preventDefault();
     inputSearch(searchPlace);
   };
-
-  useEffect(() => {
-    setPlaces(getPlacesFromLocalStorage());
-  }, []);
 
   return (
     <header className="bg-blue-1">

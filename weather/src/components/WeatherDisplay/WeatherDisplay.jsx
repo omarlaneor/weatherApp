@@ -1,12 +1,22 @@
-import React from "react";
-import { LocationIcon, SignalIcon } from "../Icons/Icons"; // Ajusta la ruta según la estructura de tu proyecto
+import React, { useEffect } from "react";
+import { ArrowIcon, LocationIcon, SignalIcon } from "../Icons/Icons";
+import { getWeatherCoord, getForecastCoord } from "../../apiKey/api";
 
-const WeatherDisplay = ({ weatherData, coords }) => {
+function WeatherDisplay({ weatherData, forecastData, keys, cords }) {
+  useEffect(() => {
+    getWeatherCoord(weatherData.lat, weatherData.lon).then((data) =>
+      weatherData.changeWeather(data)
+    );
+    getForecastCoord(weatherData.lat, weatherData.lon).then((data) =>
+      weatherData.changeForecast(data)
+    );
+  }, [weatherData]);
+
   return (
-    <article className="px-4 py-20 bg-blue-1 h-screen ">
+    <article className="px-4 py-20 bg-blue-1 h-screen">
       <button
-        className="absolute top-6 right-4 bg-gray-3 rounded-full p-3 "
-        onClick={coords}
+        className="absolute top-6 right-4 bg-gray-3 rounded-full p-3"
+        onClick={cords}
       >
         <SignalIcon />
       </button>
@@ -23,9 +33,9 @@ const WeatherDisplay = ({ weatherData, coords }) => {
         <p className="text-gray-2 text-4xl font-semibold pb-12">
           {weatherData.weather}
         </p>
-        <div className="flex gap-6 text-gray-2 text-lg font-medium pb-14 mt-24">
+        <div className="flex gap-4 text-gray-2 text-lg font-medium pb-8">
           <span>Today</span>
-          <span>-</span>
+          <span>--</span>
           <span>{weatherData.dateFormat}</span>
         </div>
         <div className="flex gap-3">
@@ -37,6 +47,6 @@ const WeatherDisplay = ({ weatherData, coords }) => {
       </div>
     </article>
   );
-};
+}
 
 export default WeatherDisplay;
