@@ -4,7 +4,7 @@ function getWeatherCoord(lat, lon) {
   return fetch(
     `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`
   )
-    .then((res) => res - json())
+    .then((res) => res.json())
     .then((data) => data);
 }
 
