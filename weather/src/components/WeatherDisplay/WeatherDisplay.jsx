@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { ArrowIcon, LocationIcon, SignalIcon } from "../Icons/Icons";
+import { LocationIcon } from "../Icons/Icons";
 import { getWeatherCoord, getForecastCoord } from "../../apiKey/api";
 
-function WeatherDisplay({ weatherData, forecastData, keys, cords }) {
+function WeatherDisplay({ weatherData, cords }) {
   useEffect(() => {
     getWeatherCoord(weatherData.lat, weatherData.lon).then((data) =>
       weatherData.changeWeather(data)
@@ -18,7 +18,7 @@ function WeatherDisplay({ weatherData, forecastData, keys, cords }) {
         className="absolute top-6 right-4 bg-gray-3 rounded-full p-3"
         onClick={cords}
       >
-        <SignalIcon />
+        <LocationIcon />
       </button>
       <div className="flex flex-col items-center">
         <img

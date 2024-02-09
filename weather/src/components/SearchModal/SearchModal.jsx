@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { ExitIcon, SearchIcon } from "../Icons/Icons";
 
 const SearchModal = ({ showModal, onClose, inputSearch }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [places, setPlaces] = useState(null);
   const [searchPlace, setSearchPlace] = useState("");
 
   const toggleMenu = () => {
@@ -15,14 +14,10 @@ const SearchModal = ({ showModal, onClose, inputSearch }) => {
     setIsMenuOpen((prev) => !prev);
   };
 
-  const selectAndClose = (place) => {
-    inputSearch(place);
-    toggleMenu();
-  };
-
   const search = (e) => {
     e.preventDefault();
     inputSearch(searchPlace);
+    toggleMenu();
   };
 
   return (
@@ -35,12 +30,12 @@ const SearchModal = ({ showModal, onClose, inputSearch }) => {
       <nav
         className={`${
           isMenuOpen ? "fixed" : "hidden"
-        } p-3 bg-blue-1 top-0 left-0 right-0 bottom-0 justify-center text-center z-50 no-scrollbar items-center overflow-auto`}
+        } p-3 bg-blue-1 top-0 left-0 right-3/4 bottom-0 justify-center text-center z-50 no-scrollbar items-center overflow-auto`}
       >
-        <button className="p-4 flex ml-auto" onClick={toggleMenu}>
+        <button className="mt-4 mb-2p-2 flex ml-auto" onClick={toggleMenu}>
           <ExitIcon />
         </button>
-        <form className="flex gap-3" onSubmit={search}>
+        <form className="mt-6 flex gap-2" onSubmit={search}>
           <div className="pl-3 gap-3 flex items-center p-1 border w-full border-gray-1">
             <SearchIcon />
             <input
@@ -51,7 +46,7 @@ const SearchModal = ({ showModal, onClose, inputSearch }) => {
               onChange={(event) => setSearchPlace(event.target.value)}
             />
           </div>
-          <button className="bg-[#3C47E9] px-5 py-6" type="submit">
+          <button className="bg-[#3C47E9] px-4 py-4" type="submit">
             Search
           </button>
         </form>
